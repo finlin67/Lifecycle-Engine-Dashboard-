@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import CompactLifecycleDashboard from './Lifecycle-Engine-Dashboard';
+import Lifecycle360 from './Lifecycle-360';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -10,6 +10,6 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <CompactLifecycleDashboard />
+    <Lifecycle360 />
   </React.StrictMode>
 );
