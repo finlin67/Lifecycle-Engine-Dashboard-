@@ -14,7 +14,9 @@ import {
   Server,
   Activity,
   Trash2,
-  BarChart3
+  BarChart3,
+  TrendingUp,
+  Zap
 } from 'lucide-react';
 
 // --- Types ---
@@ -143,7 +145,7 @@ export default function Lifecycle360() {
       const newItem = { ...FEED_ITEMS[nextItemIndex], id: Date.now() }; 
       
       setLiveFeed(prev => {
-        if (prev.length === 0) return prev; // Don't auto-fill if cleared
+        if (prev.length === 0) return prev; 
         const newFeed = [newItem, ...prev];
         return newFeed.slice(0, 4); 
       });
@@ -158,11 +160,12 @@ export default function Lifecycle360() {
 
   return (
     <div className="w-full h-full flex justify-center items-center bg-[#000000] text-white font-['Inter']">
-      {/* 600x600 Container */}
+      
+      {/* 600x600 Fixed Tile Container */}
       <div className="w-[600px] h-[600px] bg-[#0a0f1a] border border-slate-800 overflow-hidden relative shadow-2xl flex flex-col selection:bg-cyan-500/30">
         
-        {/* Header */}
-        <header className="flex items-center justify-between border-b border-slate-800 px-3 py-2 bg-[#0a0f1a]/95 backdrop-blur-md z-20 shrink-0 h-10">
+        {/* Header (Top 7%) */}
+        <header className="h-[40px] flex items-center justify-between border-b border-slate-800 px-3 bg-[#0a0f1a]/95 backdrop-blur-md z-20 shrink-0">
           <div className="flex items-center gap-2">
             <div className="size-5 bg-[#135bec] rounded flex items-center justify-center shadow-[0_0_10px_rgba(19,91,236,0.5)]">
               <Video className="text-white w-3 h-3" />
@@ -171,171 +174,163 @@ export default function Lifecycle360() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-[10px] text-slate-500 font-medium uppercase tracking-widest">v2.4 Live</span>
-            <div 
-              className="h-5 w-5 rounded-full bg-slate-700 bg-cover bg-center border border-slate-600" 
-              style={{ backgroundImage: "url('https://picsum.photos/40/40')" }}
-            />
+            <div className="flex gap-1.5">
+               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+               <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
+            </div>
           </div>
         </header>
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3 relative z-10">
+        {/* Main Layout: Sandwich Design */}
+        <div className="flex-1 flex flex-col relative z-10">
           
-          {/* Flywheel Section */}
-          <section className="relative rounded-lg p-2 border border-slate-800/50 overflow-hidden bg-slate-900/20">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(19,91,236,0.1)_0%,transparent_70%)]" />
-            <div className="flex justify-between px-6 items-center gap-2 z-10 relative">
-              <FlywheelNode icon={Eye} label="Aware" value={formatK(stats.aware)} color="#135bec" />
-              <div className="h-[1px] w-6 bg-slate-800" />
-              <FlywheelNode icon={MousePointer2} label="Engage" value={formatK(stats.engage)} color="#a855f7" />
-              <div className="h-[1px] w-6 bg-slate-800" />
-              <div className="flex flex-col items-center gap-0.5 relative">
-                <motion.div 
-                   animate={{ boxShadow: ["0 0 10px rgba(249,115,22,0.2)", "0 0 20px rgba(249,115,22,0.4)", "0 0 10px rgba(249,115,22,0.2)"] }}
-                   transition={{ duration: 3, repeat: Infinity }}
-                   className="size-16 rounded-full border border-orange-500 bg-orange-500/10 flex flex-col items-center justify-center text-center relative"
-                >
-                  <History className="text-white w-4 h-4 mb-0.5" />
-                  <span className="font-black text-sm leading-none">{formatK(stats.retain)}</span>
-                  <span className="text-[9px] font-bold text-white uppercase mt-0.5">Retain</span>
-                  <div className="absolute -bottom-1.5 bg-emerald-500 text-[8px] px-1.5 py-px rounded-full font-bold shadow-lg text-black border border-emerald-400">+8%</div>
-                </motion.div>
-              </div>
-              <div className="h-[1px] w-6 bg-slate-800" />
-              <FlywheelNode icon={BadgeCheck} label="Loyal" value={formatK(stats.loyal)} color="#10b981" />
-            </div>
-          </section>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 gap-2">
-            <StatCard label="Total Users" value="1.5M" change="+2.1%" />
-            <StatCard label="Active Users" value={formatComma(stats.activeUsers)} change="+12%" />
-            <StatCard label="New Signups" value="5.2k" change="+8.5%" />
-            <StatCard label="Engaged" value={formatComma(stats.engaged)} change="+5.2%" />
-            <StatCard label="Avg Session" value="3m 15s" change="+0.9%" />
-            <StatCard label="Conversion" value={`${stats.conversion}%`} change="+0.4%" />
-            <div className="bg-slate-900/40 border border-slate-800 rounded p-2 flex justify-between items-center hover:bg-slate-800/50 transition-colors col-span-2">
-              <div>
-                <p className="text-slate-500 font-medium mb-0.5 uppercase text-[10px]">Campaigns</p>
-                <h3 className="text-sm font-bold w-full text-white">{stats.campaigns} Active</h3>
-              </div>
-              <Megaphone className="text-[#135bec] w-4 h-4 opacity-80" />
-            </div>
+          {/* 1. Top Section: Key Metrics (Secondary Data) */}
+          <div className="h-[90px] grid grid-cols-4 border-b border-slate-800/50 bg-slate-900/20">
+             <StatMini label="Active Users" value={formatComma(stats.activeUsers)} change="+12%" />
+             <StatMini label="New Signups" value="5.2k" change="+8.5%" />
+             <StatMini label="Conversion" value={`${stats.conversion}%`} change="+0.4%" />
+             <StatMini label="Avg Session" value="3m 15s" change="+0.9%" />
           </div>
 
-          {/* System Performance */}
-          <div className="grid grid-cols-3 gap-2">
-            <PerfCard label="CPU" value={perf.cpu} color="#00f3ff" unit="%" icon={Cpu} history={perfHistory.cpu} />
-            <PerfCard label="RAM" value={perf.memory} color="#a855f7" unit="%" icon={Server} history={perfHistory.memory} />
-            <NetworkCard value={perf.network} history={perfHistory.network} />
-          </div>
-
-          {/* Retention Heatmap */}
-          <div className="bg-slate-900/60 border border-orange-500/30 rounded overflow-hidden">
-            <div className="flex items-center justify-between px-3 py-1.5 border-b border-slate-800 bg-slate-900/80">
-              <h3 className="font-bold text-[10px] text-orange-400 uppercase tracking-wide">Retention Heatmap</h3>
-              <div className="flex items-center gap-2 text-[9px] font-mono">
-                <span className="text-[#00f3ff]">D30: 68%</span>
-                <span className="text-slate-600">|</span>
-                <span className="text-slate-400">Churn: 4.2%</span>
-              </div>
-            </div>
-            <div className="p-1.5 overflow-x-auto">
-              <table className="w-full text-center border-separate border-spacing-1">
-                <thead>
-                  <tr className="text-[9px] font-bold text-slate-500 uppercase">
-                    <th className="text-left">Cohort</th>
-                    <th>Users</th>
-                    <th>W0</th>
-                    <th>W1</th>
-                    <th>W2</th>
-                    <th>W3</th>
-                    <th>W4</th>
-                    <th>W5</th>
-                  </tr>
-                </thead>
-                <tbody className="text-[10px] font-bold font-mono">
-                  <HeatmapRow date="Oct 23" users="1.2k" values={[100, 92, 84, 78, 72, 65]} />
-                  <HeatmapRow date="Oct 30" users="1.4k" values={[100, 88, 76, 64, 58, 42]} />
-                  <HeatmapRow date="Nov 06" users="1.1k" values={[100, 94, 88, 82, 74, -1]} />
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Live Feed */}
-          <div className="space-y-2 pb-14">
-            <div className="bg-slate-900/40 border border-slate-800 rounded p-2 min-h-[90px]">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-bold text-[10px] uppercase tracking-wider text-slate-400">Live Stream</h4>
-                  <button 
-                    onClick={() => setLiveFeed([])}
-                    className="flex items-center gap-1 px-2 py-0.5 bg-slate-800/50 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 rounded text-[9px] font-medium text-slate-500 hover:text-red-400 transition-all group cursor-pointer"
-                  >
-                    <Trash2 className="w-2.5 h-2.5 group-hover:scale-110 transition-transform" />
-                    <span>CLEAR</span>
-                  </button>
-                </div>
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-              </div>
-              
-              <div className="space-y-1.5 relative overflow-hidden">
-                <AnimatePresence initial={false} mode='popLayout'>
-                  {liveFeed.map((item) => (
-                    <motion.div
-                      layout
-                      key={item.id}
-                      initial={{ opacity: 0, x: -50, height: 0, scale: 0.8, filter: "blur(4px)" }}
-                      animate={{ opacity: 1, x: 0, height: 'auto', scale: 1, filter: "blur(0px)" }}
-                      exit={{ opacity: 0, x: 50, height: 0, scale: 0.9, transition: { duration: 0.2 } }}
-                      transition={{ type: "spring", stiffness: 400, damping: 20, mass: 0.8 }}
-                      className="flex items-center gap-2 p-1.5 bg-slate-800/30 rounded border border-transparent hover:border-slate-700/50"
-                    >
-                      <div className={`size-1.5 rounded-full shrink-0 ${
-                        item.type === 'warning' ? 'bg-orange-500 shadow-[0_0_6px_#f97316]' : 
-                        item.type === 'success' ? 'bg-emerald-500 shadow-[0_0_6px_#10b981]' : 
-                        'bg-[#135bec] shadow-[0_0_6px_#135bec]'
-                      }`} />
-                      <p className="flex-1 text-[10px] truncate text-slate-300 font-medium">
-                        {item.text}
-                      </p>
-                      <span className="text-[9px] text-slate-600 shrink-0 font-mono">{item.time}</span>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-                {liveFeed.length === 0 && (
+          {/* 2. Hero Section: Flywheel (Optical Center) */}
+          <div className="h-[140px] relative flex items-center justify-center border-b border-slate-800/50 overflow-hidden bg-[radial-gradient(circle_at_center,rgba(19,91,236,0.08)_0%,transparent_70%)]">
+             {/* Decorative Connecting Line */}
+             <div className="absolute top-1/2 left-10 right-10 h-[1px] bg-slate-800/60 -translate-y-1/2 z-0" />
+             
+             <div className="relative z-10 flex justify-between w-full px-12 items-center">
+                <FlywheelNode icon={Eye} label="Aware" value={formatK(stats.aware)} color="#135bec" />
+                <FlywheelNode icon={MousePointer2} label="Engage" value={formatK(stats.engage)} color="#a855f7" />
+                
+                {/* Central Hero Pulse */}
+                <div className="flex flex-col items-center gap-0.5 relative -mt-4">
                   <motion.div 
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                    className="text-center text-[10px] text-slate-600 py-4 italic"
+                     animate={{ 
+                       boxShadow: ["0 0 10px rgba(249,115,22,0.2)", "0 0 25px rgba(249,115,22,0.5)", "0 0 10px rgba(249,115,22,0.2)"],
+                       scale: [1, 1.05, 1]
+                     }}
+                     transition={{ duration: 3, repeat: Infinity }}
+                     className="size-20 rounded-full border-2 border-orange-500 bg-[#0a0f1a] flex flex-col items-center justify-center text-center relative z-20 shadow-2xl"
                   >
-                    Feed cleared. Waiting for events...
+                    <History className="text-white w-5 h-5 mb-0.5" />
+                    <span className="font-black text-lg leading-none">{formatK(stats.retain)}</span>
+                    <span className="text-[9px] font-bold text-slate-400 uppercase mt-0.5">Retain</span>
                   </motion.div>
-                )}
-              </div>
-            </div>
+                  <div className="absolute -bottom-6 bg-emerald-500 text-[9px] px-2 py-0.5 rounded-full font-bold text-black border border-emerald-400 shadow-[0_4px_10px_rgba(16,185,129,0.4)] z-30">
+                    +8%
+                  </div>
+                </div>
+
+                <FlywheelNode icon={BadgeCheck} label="Loyal" value={formatK(stats.loyal)} color="#10b981" />
+             </div>
+          </div>
+
+          {/* 3. Lower Section: Details Grid */}
+          <div className="flex-1 flex border-b border-slate-800/50">
+             {/* Left: Heatmap */}
+             <div className="w-[320px] border-r border-slate-800/50 p-2 flex flex-col">
+                <div className="flex items-center justify-between mb-2 px-1">
+                   <h3 className="font-bold text-[10px] text-orange-400 uppercase tracking-wide flex items-center gap-1">
+                     <TrendingUp className="w-3 h-3" /> Retention Heatmap
+                   </h3>
+                   <span className="text-[9px] text-slate-500">D30: 68%</span>
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <table className="w-full text-center border-separate border-spacing-1">
+                    <thead>
+                      <tr className="text-[8px] font-bold text-slate-500 uppercase">
+                        <th className="text-left font-normal">Cohort</th>
+                        <th className="font-normal">Users</th>
+                        <th className="font-normal">W0</th>
+                        <th className="font-normal">W1</th>
+                        <th className="font-normal">W2</th>
+                        <th className="font-normal">W3</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-[9px] font-bold font-mono">
+                      <HeatmapRow date="Oct 23" users="1.2k" values={[100, 92, 84, 78]} />
+                      <HeatmapRow date="Oct 30" users="1.4k" values={[100, 88, 76, 64]} />
+                      <HeatmapRow date="Nov 06" users="1.1k" values={[100, 94, 88, 82]} />
+                      <HeatmapRow date="Nov 13" users="0.9k" values={[100, 91, 85, -1]} />
+                    </tbody>
+                  </table>
+                </div>
+             </div>
+
+             {/* Right: Live Feed */}
+             <div className="flex-1 p-2 bg-slate-900/10">
+                <div className="flex items-center justify-between mb-2 px-1">
+                   <h3 className="font-bold text-[10px] text-slate-400 uppercase tracking-wide flex items-center gap-1">
+                     <Zap className="w-3 h-3 text-yellow-500" /> Live Feed
+                   </h3>
+                   <button 
+                      onClick={() => setLiveFeed([])} 
+                      className="text-[8px] text-slate-600 hover:text-red-400 uppercase transition-colors"
+                   >
+                     Clear
+                   </button>
+                </div>
+                <div className="space-y-1.5 relative h-[120px] overflow-hidden mask-linear-fade">
+                   <AnimatePresence initial={false} mode='popLayout'>
+                    {liveFeed.map((item) => (
+                      <motion.div
+                        layout
+                        key={item.id}
+                        initial={{ opacity: 0, x: 20, filter: "blur(4px)" }}
+                        animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="flex items-center gap-2 p-1.5 bg-slate-800/40 rounded border border-slate-700/30"
+                      >
+                        <div className={`size-1.5 rounded-full shrink-0 ${
+                          item.type === 'warning' ? 'bg-orange-500 shadow-[0_0_6px_#f97316]' : 
+                          item.type === 'success' ? 'bg-emerald-500 shadow-[0_0_6px_#10b981]' : 
+                          'bg-[#135bec] shadow-[0_0_6px_#135bec]'
+                        }`} />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[9px] truncate text-slate-300 font-medium leading-tight">
+                            {item.text}
+                          </p>
+                        </div>
+                        <span className="text-[8px] text-slate-600 shrink-0 font-mono">{item.time}</span>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                   {liveFeed.length === 0 && (
+                      <div className="text-center text-[9px] text-slate-600 py-8">Waiting for events...</div>
+                   )}
+                </div>
+             </div>
           </div>
         </div>
 
+        {/* 4. Telemetry Section: Bottom 15% (~90px) */}
+        <div className="h-[90px] bg-[#0d121f] border-t border-slate-800 px-4 py-2 flex flex-col justify-center">
+            <div className="flex items-center gap-2 mb-2">
+               <Cpu className="w-3 h-3 text-slate-500" />
+               <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">System Telemetry</span>
+            </div>
+            <div className="grid grid-cols-3 gap-3 h-full">
+              <PerfHorizontal label="CPU Load" value={perf.cpu} color="#00f3ff" history={perfHistory.cpu} />
+              <PerfHorizontal label="Memory" value={perf.memory} color="#a855f7" history={perfHistory.memory} />
+              <PerfHorizontal label="Network" value={perf.network} color="#10b981" history={perfHistory.network} unit=" MB/s" />
+            </div>
+        </div>
+
         {/* Footer */}
-        <footer className="h-8 border-t border-slate-800 flex justify-between items-center px-3 text-[9px] text-slate-500 font-medium bg-[#0a0f1a] z-30 shrink-0">
-          <p>© 2024 Lifecycle Engine AI</p>
+        <footer className="h-[25px] flex justify-between items-center px-3 text-[8px] text-slate-600 font-medium bg-[#05080f] z-30 shrink-0 border-t border-slate-800/50">
+          <p className="font-mono">ID: LC-360-X92</p>
           <div className="flex gap-3">
-            <span className="flex items-center gap-1 hover:text-slate-300 cursor-pointer transition-colors">
-              <Shield className="w-2.5 h-2.5" /> SECURE
+            <span className="flex items-center gap-1 hover:text-slate-400 cursor-pointer transition-colors">
+              <Shield className="w-2 h-2" /> ENCRYPTED
             </span>
-            <span className="flex items-center gap-1 hover:text-slate-300 cursor-pointer transition-colors">
-              <Database className="w-2.5 h-2.5" /> US-EAST-1
+            <span className="flex items-center gap-1 hover:text-slate-400 cursor-pointer transition-colors">
+              <Database className="w-2 h-2" /> CONNECTED
             </span>
           </div>
         </footer>
 
         {/* FAB */}
-        <button className="absolute bottom-10 right-4 size-10 bg-[#135bec] text-white rounded-full shadow-[0_4px_20px_rgba(19,91,236,0.4)] flex items-center justify-center hover:scale-110 transition-transform z-40 border border-blue-400/20 active:scale-95">
-          <Plus className="w-5 h-5" />
+        <button className="absolute bottom-[100px] right-4 size-8 bg-[#135bec] text-white rounded-full shadow-[0_4px_20px_rgba(19,91,236,0.4)] flex items-center justify-center hover:scale-110 transition-transform z-40 border border-blue-400/20 active:scale-95 group">
+          <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
         </button>
       </div>
     </div>
@@ -344,26 +339,27 @@ export default function Lifecycle360() {
 
 // --- Sub-Components ---
 
-function FlywheelNode({ icon: Icon, label, value, color }: { icon: any, label: string, value: string, color: string }) {
-  return (
-    <div className="flex flex-col items-center gap-1">
-      <div className="size-12 rounded-full border border-opacity-30 bg-[#0a0f1a]/80 flex flex-col items-center justify-center text-center backdrop-blur-sm" style={{ borderColor: color }}>
-        <Icon className="w-3.5 h-3.5 mb-0.5" style={{ color }} />
-        <span className="font-bold text-[11px] leading-none text-white">{value}</span>
+function StatMini({ label, value, change }: { label: string, value: string, change: string }) {
+   return (
+      <div className="flex flex-col items-center justify-center border-r border-slate-800/30 last:border-r-0 p-2 hover:bg-slate-800/30 transition-colors group cursor-default">
+         <span className="text-[9px] text-slate-500 uppercase mb-0.5 font-medium group-hover:text-slate-400">{label}</span>
+         <span className="text-sm font-bold text-white leading-none mb-1">{value}</span>
+         <span className="text-[8px] text-emerald-400 bg-emerald-500/10 px-1 rounded">{change}</span>
       </div>
-      <span className="text-[9px] text-slate-500 uppercase tracking-wide">{label}</span>
-    </div>
-  );
+   )
 }
 
-function StatCard({ label, value, change }: { label: string, value: string, change: string }) {
+function FlywheelNode({ icon: Icon, label, value, color }: { icon: any, label: string, value: string, color: string }) {
   return (
-    <div className="bg-slate-900/40 border border-slate-800 rounded p-2 flex justify-between items-center hover:bg-slate-800/60 transition-colors group cursor-default">
-      <div>
-        <p className="text-slate-500 font-medium mb-0.5 uppercase text-[10px] group-hover:text-slate-400 transition-colors">{label}</p>
-        <h3 className="text-sm font-bold w-full text-white">{value}</h3>
+    <div className="flex flex-col items-center gap-2 z-10 bg-[#0a0f1a] py-1">
+      <div className="size-10 rounded-full border border-opacity-30 bg-[#0a0f1a] flex flex-col items-center justify-center text-center shadow-lg relative overflow-hidden group" style={{ borderColor: color }}>
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity" style={{ backgroundColor: color }} />
+        <Icon className="w-4 h-4" style={{ color }} />
       </div>
-      <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">{change}</span>
+      <div className="flex flex-col items-center">
+         <span className="font-bold text-[10px] leading-none text-white">{value}</span>
+         <span className="text-[8px] text-slate-500 uppercase tracking-wide mt-0.5">{label}</span>
+      </div>
     </div>
   );
 }
@@ -371,15 +367,12 @@ function StatCard({ label, value, change }: { label: string, value: string, chan
 function Tooltip({ history, unit, label, color }: { history: number[], unit: string, label: string, color: string }) {
   const peak = Math.max(...history).toFixed(1);
   const avg = (history.reduce((a, b) => a + b, 0) / history.length).toFixed(1);
-  
-  // Normalize history for sparkline
   const max = Math.max(...history) || 100;
   const min = Math.min(...history) || 0;
   const range = max - min || 1;
   
-  // Generate Sparkline path
-  const width = 120;
-  const height = 24;
+  const width = 100;
+  const height = 20;
   const points = history.map((val, i) => {
     const x = (i / (history.length - 1)) * width;
     const y = height - ((val - min) / range) * height;
@@ -388,103 +381,49 @@ function Tooltip({ history, unit, label, color }: { history: number[], unit: str
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 5, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: 5, scale: 0.95 }}
-      className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-36 bg-[#0f172a] border border-slate-700 p-2.5 rounded shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-50 pointer-events-none"
+      initial={{ opacity: 0, y: 5 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 5 }}
+      className="absolute bottom-full left-0 mb-2 w-32 bg-[#0f172a] border border-slate-700 p-2 rounded shadow-xl z-50 pointer-events-none"
     >
-      <div className="flex justify-between items-center mb-2 pb-1 border-b border-slate-800">
-        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{label} History (60s)</span>
-        <BarChart3 className="w-3 h-3 text-slate-500" />
+      <div className="flex justify-between items-center mb-1 pb-1 border-b border-slate-800">
+        <span className="text-[8px] font-bold text-slate-400 uppercase">{label}</span>
+        <span className="text-[8px] font-mono text-white">{history[history.length-1].toFixed(0)}{unit}</span>
       </div>
-      <div className="flex justify-between gap-2 mb-2">
-        <div className="flex flex-col">
-           <span className="text-[8px] text-slate-500 uppercase font-medium">Peak</span>
-           <span className="text-[10px] font-mono font-bold text-white">{peak}{unit}</span>
-        </div>
-        <div className="flex flex-col items-end">
-           <span className="text-[8px] text-slate-500 uppercase font-medium">Avg</span>
-           <span className="text-[10px] font-mono font-bold text-white">{avg}{unit}</span>
-        </div>
-      </div>
-      <div className="relative h-6 w-full bg-slate-900/50 rounded overflow-hidden border border-slate-800/50">
-        <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="overflow-visible">
-          <polyline 
-            points={points} 
-            fill="none" 
-            stroke={color} 
-            strokeWidth="1.5" 
-            vectorEffect="non-scaling-stroke"
-            className="drop-shadow-[0_0_4px_rgba(0,0,0,0.8)]"
-          />
+      <div className="relative h-5 w-full bg-slate-900/50 rounded overflow-hidden">
+        <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
+          <polyline points={points} fill="none" stroke={color} strokeWidth="1.5" />
         </svg>
       </div>
-      <div className="absolute bottom-[-5px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[#0f172a] border-b border-r border-slate-700 rotate-45" />
     </motion.div>
   );
 }
 
-function PerfCard({ label, value, color, unit, icon: Icon, history }: { label: string, value: number, color: string, unit: string, icon: any, history: number[] }) {
+function PerfHorizontal({ label, value, color, history, unit = "%" }: { label: string, value: number, color: string, history: number[], unit?: string }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div 
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className="bg-slate-900/40 border border-slate-800 rounded p-2 flex flex-col justify-between hover:bg-slate-800/60 transition-colors relative"
+      className="flex flex-col justify-end relative h-full group"
     >
       <AnimatePresence>
         {isHovered && <Tooltip history={history} unit={unit} label={label} color={color} />}
       </AnimatePresence>
-      <div className="flex justify-between items-center mb-1.5">
-        <div className="flex items-center gap-1.5">
-          <Icon className="w-3 h-3" style={{ color }} />
-          <span className="text-[9px] text-slate-400 font-bold uppercase">{label}</span>
-        </div>
-        <span className={`text-[10px] font-mono ${value > 85 ? 'text-orange-500' : 'text-slate-300'}`}>
-          {value}{unit}
-        </span>
+      
+      <div className="flex justify-between items-end mb-1">
+         <span className="text-[9px] font-medium text-slate-400">{label}</span>
+         <span className={`text-[9px] font-mono font-bold ${value > 90 ? 'text-orange-500' : 'text-slate-300'}`}>{value}{unit}</span>
       </div>
+      
       <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
         <motion.div 
           className="h-full rounded-full"
           style={{ backgroundColor: value > 85 ? '#f97316' : color }}
-          animate={{ width: `${value}%` }}
+          animate={{ width: `${Math.min(100, Math.max(5, value))}%` }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         />
-      </div>
-    </div>
-  );
-}
-
-function NetworkCard({ value, history }: { value: number, history: number[] }) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <div 
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="bg-slate-900/40 border border-slate-800 rounded p-2 flex flex-col justify-between hover:bg-slate-800/60 transition-colors relative"
-    >
-      <AnimatePresence>
-        {isHovered && <Tooltip history={history} unit=" MB/s" label="Network" color="#10b981" />}
-      </AnimatePresence>
-      <div className="flex justify-between items-center mb-1.5">
-        <div className="flex items-center gap-1.5">
-          <Activity className="w-3 h-3 text-emerald-400" />
-          <span className="text-[9px] text-slate-400 font-bold uppercase">NET</span>
-        </div>
-        <span className="text-[10px] font-mono text-slate-300">{value}<span className="text-[8px] text-slate-500 ml-0.5">MB/s</span></span>
-      </div>
-      <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden flex items-end gap-[1px] opacity-80">
-          {[...Array(12)].map((_, i) => (
-            <motion.div 
-              key={i}
-              className="w-full bg-emerald-500 rounded-[1px]"
-              animate={{ height: `${Math.min(100, Math.max(10, (value * 15) + (Math.random() * 40 - 20)))}%` }}
-              transition={{ duration: 0.2, repeat: Infinity, repeatType: "reverse" }}
-            />
-          ))}
       </div>
     </div>
   );
@@ -493,14 +432,14 @@ function NetworkCard({ value, history }: { value: number, history: number[] }) {
 function HeatmapRow({ date, users, values }: { date: string, users: string, values: number[] }) {
   return (
     <tr>
-      <td className="text-left text-slate-400 py-0.5 pl-1">{date}</td>
-      <td className="text-slate-300">{users}</td>
+      <td className="text-left text-slate-400 py-0.5 pl-1 border-b border-slate-800/30">{date}</td>
+      <td className="text-slate-300 border-b border-slate-800/30">{users}</td>
       {values.map((val, i) => (
-        <td key={i} className="py-0.5 px-px">
+        <td key={i} className="py-0.5 px-px border-b border-slate-800/30">
           {val === -1 ? (
-            <div className="bg-[#1e1b4b] text-[#64748b] py-0.5 rounded-sm opacity-20">-</div>
+            <div className="bg-[#1e1b4b] text-[#64748b] py-0.5 rounded-sm opacity-20 mx-0.5">-</div>
           ) : (
-            <div className={`${getRetentionStyle(val)} py-0.5 rounded-sm shadow-sm`}>{val}</div>
+            <div className={`${getRetentionStyle(val)} py-0.5 rounded-sm shadow-sm text-[8px] mx-0.5`}>{val}</div>
           )}
         </td>
       ))}
